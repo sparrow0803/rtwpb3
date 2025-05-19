@@ -1,3 +1,14 @@
+<?php
+session_start();
+
+try{
+    $pdo = new PDO('mysql:host=localhost;dbname=rtwpb3', "root", "");
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    } catch (PDOException $e) {
+    echo 'Connection Failed' .$e->getMessage();
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -157,13 +168,13 @@
         <a class="btn shadow-none me-2" href="https://nwpc.dole.gov.ph/region-iii/" target="_blank" rel="noopener noreferrer">
           <i class="bi bi-link-45deg"></i>
         </a>
-        <button type="button" class="btn btn-outline-dark shadow-none me-lg-3 me-2" data-bs-toggle="modal" data-bs-target="#loginModal">
+        <!-- <button type="button" class="btn btn-outline-dark shadow-none me-lg-3 me-2" data-bs-toggle="modal" data-bs-target="#loginModal">
         Login
         </button>
         <button type="button" class="btn btn-outline-dark shadow-none" data-bs-toggle="modal" data-bs-target="#registerModal">
         Register
-        </button>
-      </di>
+        </button> -->
+      </div>
     </div>
   </div>
 </nav>
@@ -175,14 +186,14 @@
     <form>
       <div class="modal-header">
         <h5 class="modal-title d-flex align-items-center">
-        <i class="bi bi-person-circle fs-3 me-2"></i> User Login
+        <i class="bi bi-person-circle fs-3 me-2"></i> Admin Login
         </h5>
         <button type="reset" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div class="mb-3">
-            <label class="form-label">Email address</label>
-            <input type="email" class="form-control shadow-none">
+            <label class="form-label">Username</label>
+            <input type="text" class="form-control shadow-none">
         </div>
          <div class="mb-4">
             <label class="form-label">Password</label>
@@ -190,7 +201,7 @@
         </div>
         <div class="d-flex align-items-center justify-content-between">
             <button type="submit" class="btn btn-dark shadow-none">Login</button>
-            <a href="javascript: void(0)" class="text-secondary text-decoration-none">Forgot Password?</a>
+            <!-- <a href="javascript: void(0)" class="text-secondary text-decoration-none">Forgot Password?</a> -->
         </div>
       </div>
     </form>
@@ -199,7 +210,7 @@
 </div>
 
 <!-- REGISTER MODAL -->
-<div class="modal fade" id="registerModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="registerModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
     <form>
@@ -256,26 +267,14 @@
         <div class="text-center my-1">
             <button type="submit" class="btn btn-dark shadow-none"> REGISTER</button>
         </div>
-        <!-- <div class="mb-3">
-            <label class="form-label">Email address</label>
-            <input type="email" class="form-control shadow-none">
-        </div>
-         <div class="mb-4">
-            <label class="form-label">Password</label>
-            <input type="password" class="form-control shadow-none">
-        </div>
-        <div class="d-flex align-items-center justify-content-between">
-            <button type="submit" class="btn btn-dark shadow-none">Login</button>
-            <a href="javascript: void(0)" class="text-secondary text-decoration-none">Forgot Password?</a>
-        </div> -->
       </div>
     </form>
     </div>
   </div>
-</div>
+</div> -->
 
 <!-- CAROUSEL -->
-<div class="container-fluid px-lg-4 mt-4" id="home" data-aos="zoom-in" data-aos-delay="20">
+<div class="" id="home" data-aos="zoom-in" data-aos-delay="20">
   <div class="swiper swiper-container">
     <div class="swiper-wrapper">
       <div class="swiper-slide">
@@ -301,7 +300,7 @@
 </div>
 
 <!-- CHECK AVAILABILITY FORM -->
-<div class="container availability-form" data-aos="fade-up" data-aos-delay="30">
+<!-- <div class="container availability-form" data-aos="fade-up" data-aos-delay="30">
 <div class="row">
   <div class="col-lg-12 bg-white shadow p-4 rounded">
     <h5 class="mb-4">Submit Inquiries</h5>
@@ -322,7 +321,7 @@
     </form>
   </div>
 </div>
-</div>
+</div> -->
 
 <!-- ABOUT RTWPB3 -->
 <div class="container about-us" data-aos="fade-up" data-aos-delay="10">
@@ -356,21 +355,33 @@
   <h2 class="mt-5 pt-4 mb-4 text-center fw-bold">CURRENT NEWS</h2>
   <div class="row">
     <!-- Repeatable News Card Template with AOS -->
+    <?php
+      $stmt = $pdo->prepare("SELECT * from news ORDER BY date DESC LIMIT 3");
+      $stmt->execute();
+      if($stmt->rowCount() > 0){
+        $result = $stmt->fetchAll();
+        foreach($result as $row){
+    ?>
     <div class="col-lg-4 col-md-6 my-3" data-aos="fade-up" data-aos-delay="100">
       <div class="card border-0 shadow h-100" style="max-width: 350px; margin: auto;">
-        <img src="images/news1.jpg" class="card-img-top" style="height: 200px; object-fit: cover;" alt="News 1">
+        <img src="news/<?php echo $row['picture']; ?>" class="card-img-top" style="height: 200px; object-fit: cover;" alt="News 1">
         <div class="card-body d-flex flex-column">
-          <h5 class="card-title">New Wage Order</h5>
-          <h6 class="mb-3">April 24, 2025</h6>
+          <h5 class="card-title"><?php echo $row['title']; ?></h5>
+          <h6 class="mb-3"><?php echo $row['date']; ?></h6>
           <p class="flex-grow-1">
-            Lorem ipsum dolor sit amet. Inventore rerum sed voluptatem porro est mollitia laboriosam sed exercitationem delectus rem quas omnis.
+            <?php echo $row['description']; ?>
           </p>
-          <a href="https://www.facebook.com/share/p/1Ch12arPY2/" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white mt-auto shadow-none custom-bg">More Details</a>
+          <a href="<?php echo $row['link']; ?>" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white mt-auto shadow-none custom-bg">More Details</a>
         </div>
       </div>
     </div>
+    <?php } } 
+      else {
+    ?>
+      <h5 class="text-center" style="color: red;" data-aos="fade-up" data-aos-delay="100">NO NEWS AVAILABLE</h5>
+    <?php } ?>
 
-    <div class="col-lg-4 col-md-6 my-3" data-aos="fade-up" data-aos-delay="200">
+    <!-- <div class="col-lg-4 col-md-6 my-3" data-aos="fade-up" data-aos-delay="200">
       <div class="card border-0 shadow h-100" style="max-width: 350px; margin: auto;">
         <img src="images/news2.jpg" class="card-img-top" style="height: 200px; object-fit: cover;" alt="News 2">
         <div class="card-body d-flex flex-column">
@@ -396,10 +407,10 @@
           <a href="https://www.facebook.com/share/p/1CTPo36sjj/" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white mt-auto shadow-none custom-bg">More Details</a>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- More News Button -->
-    <div class="col-lg-12 text-center mt-5" data-aos="fade-up" data-aos-delay="400">
+    <div class="col-lg-12 text-center mt-5" data-aos="fade-up" data-aos-delay="100">
       <a href="news.php" class="btn btn-sm btn-outline-dark rounded-0 fw-bold shadow-none">More News ></a>
     </div>
   </div>
@@ -411,7 +422,31 @@
 <div class="card rounded shadow overflow-hidden">
   <div class="swiper events-slider">
     <div class="swiper-wrapper">
+      <?php
+      $stmt = $pdo->prepare("SELECT * from events ORDER BY date DESC LIMIT 5");
+      $stmt->execute();
+      if($stmt->rowCount() > 0){
+        $result = $stmt->fetchAll();
+        foreach($result as $row){
+      ?>
+
       <div class="swiper-slide eve">
+        <div class="card border-0 shadow h-100 d-flex flex-column" style="max-width: 350px; margin: auto;">
+        <img src="events/<?php echo $row['picture']; ?>" class="card-img-top" style="height: 200px; object-fit: cover;" alt="News 1">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title"><?php echo $row['title']; ?></h5>
+          <h6 class="mb-3"><?php echo $row['date']; ?></h6>
+          <h6 class="mb-3"><?php echo $row['address']; ?></h6>
+          <p class="flex-grow-1 mb-3">
+            <?php echo $row['description']; ?>
+          </p>
+          <a href="<?php echo $row['link']; ?>" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white mt-auto shadow-none custom-bg">More Details</a>
+        </div>
+      </div>
+      </div>
+      <?php } } ?>
+
+        <!-- <div class="swiper-slide eve">
         <div class="card border-0 shadow h-100 d-flex flex-column" style="max-width: 350px; margin: auto;">
         <img src="images/events1.jpg" class="card-img-top" style="height: 200px; object-fit: cover;" alt="News 1">
         <div class="card-body d-flex flex-column">
@@ -480,14 +515,21 @@
           <a href="https://www.facebook.com/share/p/15uBpUnHrb/" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white mt-auto shadow-none custom-bg">More Details</a>
         </div>
       </div>
-      </div>
+      </div> -->
+
     </div>
     <div class="swiper-pagination"></div>
     </div>
-  </div>
+    </div>
 
-      <!-- More News Button -->
-    <div class="col-lg-12 text-center mt-5">
+    <?php if($stmt->rowCount() == 0){ ?>
+      
+    <h5 class="text-center" style="color: red;" data-aos="fade-up" data-aos-delay="100">NO EVENTS AVAILABLE</h5>
+
+    <?php } ?>
+
+      <!-- More Events Button -->
+    <div class="col-lg-12 text-center mt-5" data-aos="fade-up" data-aos-delay="100">
       <a href="events.php" class="btn btn-sm btn-outline-dark rounded-0 fw-bold shadow-none">More Events ></a>
     </div>
 </div>
@@ -507,56 +549,31 @@
   <div class="col-md-5 p-0">
   <div class="swiper staff-swiper">
     <div class="swiper-wrapper">
+
+    <?php
+      $stmt = $pdo->prepare("SELECT * from staff order by id asc");
+      $stmt->execute();
+      if($stmt->rowCount() > 0){
+        $result = $stmt->fetchAll();
+        foreach($result as $row){
+     ?>
+
       <div class="swiper-slide staff-swi">
-        <img src="images/staff1.jpg">
-        <h5>Sir Kenneth</h5>
-        <h6>Leader</h6>
+        <img src="staff/<?php echo $row['picture']; ?>">
+        <h5><?php echo $row['staff']; ?></h5>
+        <h6><?php echo $row['position']; ?></h6>
       </div>
+
+
+    <?php } } 
+    else { ?>
+
       <div class="swiper-slide staff-swi">
-        <img src="images/staff2.jpg">
-        <h5>Sir Carlo</h5>
-        <h6>Center</h6>
+        <h5>No Staff</h5>
       </div>
-      <div class="swiper-slide staff-swi">
-        <img src="images/staff3.jpg">
-        <h5>Sir Bob</h5>
-        <h6>Face of the Group</h6>
-      </div>
-      <div class="swiper-slide staff-swi">
-        <img src="images/staff4.jpg">
-        <h5>Sir LA</h5>
-        <h6>Main Vocalist</h6>
-      </div>
-      <div class="swiper-slide staff-swi">
-        <img src="images/staff5.jpg">
-        <h5>Maam Ei</h5>
-        <h6>Main Dancer</h6>
-      </div>
-      <div class="swiper-slide staff-swi">
-        <img src="images/staff6.jpg">
-        <h5>Maam Kiara</h5>
-        <h6>Lead Vocalist</h6>
-      </div>
-        <div class="swiper-slide staff-swi">
-        <img src="images/staff7.jpg">
-        <h5>Sir Drew</h5>
-        <h6>Lead Dancer</h6>
-      </div>
-      <div class="swiper-slide staff-swi">
-        <img src="images/staff8.jpg">
-        <h5>Maam Gie</h5>
-        <h6>Sub Dancer</h6>
-      </div>
-      <div class="swiper-slide staff-swi">
-        <img src="images/staff9.jpg">
-        <h5>Sir Mar</h5>
-        <h6>Sub Vocalist</h6>
-      </div>
-       <div class="swiper-slide staff-swi">
-        <img src="images/staff10.jpg">
-        <h5>Sir RA</h5>
-        <h6>Sub Vocalist</h6>
-      </div>
+
+    <?php } ?>
+
     </div>
   </div>
   </div>
@@ -575,6 +592,7 @@
         AIDSASHASJAKSJAKSJAKS
         dDaaDADSASASASASAsasasasa
       </p>
+      <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="text-decoration-none">Admin Panel <i class="bi bi-box-arrow-up-right"></i></a>
     </div>
     <div class="col-lg-4 p-4">
       <h5 class="mb-3">Contact Us</h5>
