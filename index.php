@@ -7,6 +7,33 @@ try{
     } catch (PDOException $e) {
     echo 'Connection Failed' .$e->getMessage();
     }
+
+$conn = mysqli_connect('localhost', 'root', '', 'rtwpb3');
+
+if (isset($_POST['login'])){
+    $username = $_POST['username'];
+    $query = "SELECT * from admin where username='$username'";
+    $result = mysqli_query($conn, $query);
+
+    if($result){
+        if(mysqli_num_rows($result) == 1){
+            $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+            $pass = $row['password'];
+
+            if(password_verify($_POST['password'], $pass)){
+                $_SESSION['admin'] = $username;
+                $_SESSION['admin_id'] = $row['id'];
+                header('location:admin_panel.php');
+            }
+            else{
+                $_SESSION['error'] = "Invalid Password";
+            }
+        }
+        else{
+            $_SESSION['error'] = "Invalid Credentials";
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -183,24 +210,24 @@ try{
 <div class="modal fade" id="loginModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-    <form>
       <div class="modal-header">
         <h5 class="modal-title d-flex align-items-center">
         <i class="bi bi-person-circle fs-3 me-2"></i> Admin Login
         </h5>
         <button type="reset" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
+      <form method="POST" action="index.php">
       <div class="modal-body">
         <div class="mb-3">
             <label class="form-label">Username</label>
-            <input type="text" class="form-control shadow-none">
+            <input type="text" name="username" class="form-control shadow-none" autocomplete="off" required>
         </div>
          <div class="mb-4">
             <label class="form-label">Password</label>
-            <input type="password" class="form-control shadow-none">
+            <input type="password" name="password" class="form-control shadow-none" required>
         </div>
         <div class="d-flex align-items-center justify-content-between">
-            <button type="submit" class="btn btn-dark shadow-none">Login</button>
+            <button type="submit" name="login" class="btn btn-dark shadow-none">Login</button>
             <!-- <a href="javascript: void(0)" class="text-secondary text-decoration-none">Forgot Password?</a> -->
         </div>
       </div>
@@ -592,7 +619,14 @@ try{
         AIDSASHASJAKSJAKSJAKS
         dDaaDADSASASASASAsasasasa
       </p>
-      <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="text-decoration-none">Admin Panel <i class="bi bi-box-arrow-up-right"></i></a>
+      <?php 
+      if(isset($_SESSION['admin'])) {
+       echo '<a href="admin_panel.php" class="text-decoration-none">Admin Panel <i class="bi bi-box-arrow-up-right"></i></a>';
+      }
+      else {
+        echo '<a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="text-decoration-none">Admin Panel <i class="bi bi-box-arrow-up-right"></i></a>';
+      }
+      ?>
     </div>
     <div class="col-lg-4 p-4">
       <h5 class="mb-3">Contact Us</h5>
@@ -622,6 +656,7 @@ try{
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     var swiper = new Swiper(".swiper-container", {
@@ -674,6 +709,38 @@ try{
     duration: 800,   // Animation duration in ms
     easing: 'ease-in-out'
   });
+</script>
+
+<!-- SWEETALERT -->
+<?php
+  if(isset($_SESSION['success'])) { ?>
+  <script>
+    Swal.fire({
+    title: "<?php echo $_SESSION['success']; ?>",
+    icon: "success",
+    confirmButtonText: 'OK',
+    confirmButtonColor: "#043047",
+    });
+  </script>
+<?php unset($_SESSION['success']); } ?>
+
+<?php
+  if(isset($_SESSION['error'])) { ?>
+  <script>
+    Swal.fire({
+    title: "<?php echo $_SESSION['error']; ?>",
+    icon: "error",
+    confirmButtonText: 'OK',
+    confirmButtonColor: "#043047",
+    });
+  </script>
+<?php unset($_SESSION['error']); } ?>
+
+<!-- REFRESH -->
+<script>
+  if (window.history.replaceState) {
+    window.history.replaceState(null, null, window.location.href);
+  }
 </script>
 
 </body>
