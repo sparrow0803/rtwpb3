@@ -13,50 +13,56 @@ try{
     }
 
 if (isset($_POST['add'])){
-  $username = $_POST["username"];
-  $password = $_POST["password"];
-  $cpassword = $_POST["cpassword"];
+  $title = $_POST["title"];
+  $date = $_POST["date"];
+  $address = $_POST["address"];
+  $description = $_POST["description"];
+  $link = $_POST["link"];
+  $filename = $_FILES['choosefile']['name'];
+  $tempfile = $_FILES['choosefile']['tmp_name'];
+  $folder = "events/".$filename;
       
-  $stmt = $pdo->prepare("SELECT * from admin where username='$username'");
-  $stmt->execute();
-    if($stmt->rowCount() > 0){
-      $_SESSION['error'] = "Username Already Exists!";
-    }
-    else{
-      if ($password === $cpassword){
-        $hash = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $pdo->prepare("insert into admin set username=?, password=?");
-        $stmt->execute([$username, $hash]);
-        $_SESSION['success'] = "User Added Successfully!";
-      }
-      else{
-        $_SESSION['error'] = "Password Does Not Match!";
-      }
-    }
-}
-
-if (isset($_POST['pass'])){
-  $id = $_POST['id'];
-  $password = $_POST["password"];
-  $cpassword = $_POST["cpassword"];
-
-  if ($password === $cpassword){
-    $hash = password_hash($password, PASSWORD_DEFAULT);
-    $stmt = $pdo->prepare("UPDATE admin set password='$hash' where id='$id'");
-    $stmt->execute();
-    $_SESSION['success'] = "Password Updated Successfully!";
+  $stmt = $pdo->prepare("INSERT into events(title, date, address, description, link, picture) values('$title', '$date', '$address',
+  '$description', '$link', '$filename')");
+  if($stmt->execute()){
+    move_uploaded_file($tempfile, $folder);
+    $_SESSION['success'] = "Events Added Successfully!";
   }
   else{
-    $_SESSION['error'] = "Password Does Not Match!";
+    $_SESSION['error'] = "Failed to Add Events!";
+  }
+}
+
+if (isset($_POST['edit'])){
+  $id = $_POST["id"];
+  $title = $_POST["title"];
+  $date = $_POST["date"];
+  $address = $_POST["address"];
+  $description = $_POST["description"];
+  $link = $_POST["link"];
+
+  $stmt = $pdo->prepare("UPDATE events set title='$title', date='$date', address='$address', description='$description', 
+  link='$link' where id='$id'");
+  if ($stmt->execute()){
+  $_SESSION['success'] = "Event Updated Successfully!";
+  }
+  else{
+    $_SESSION['error'] = "Event Update Failed!";
   }
 }
 
 if(isset($_POST['delete'])){
     $id = $_POST['id2'];
 
-    $stmt = $pdo->prepare("DELETE from admin where id='$id'");
+    $stmt2 = $pdo->prepare("SELECT picture from events where id='$id'");
+    $stmt2->execute();
+    $row = $stmt2->fetch();
+    $imagepath = 'events/'.$row['picture'];
+    unlink($imagepath);
+
+    $stmt = $pdo->prepare("DELETE from events where id='$id'");
     if($stmt->execute()){
-      $_SESSION['success'] = "Admin Deleted Successfully!";
+      $_SESSION['success'] = "Event Deleted Successfully!";
     }
     else{
       $_SESSION['error'] = "Delete Failed!";
@@ -141,22 +147,37 @@ if(isset($_POST['delete'])){
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <form action="admin_accounts.php" method="POST">
+      <form action="admin_events.php" method="POST" enctype="multipart/form-data">
       <div class="modal-body">
 
       <div class="form-group mb-3">
-        <label class="col-sm-2 col-form-label">Username</label>
-        <input type="text" name="username" class="form-control" autocomplete="off" required></input>
+        <label class="col-sm-2 col-form-label">Title</label>
+        <input type="text" name="title" class="form-control" required></input>
       </div>
 
       <div class="form-group mb-3">
-        <label class="col-sm-2 col-form-label">Password</label>
-        <input type="password" name="password" class="form-control" required></input>
+        <label class="col-sm-2 col-form-label">Date</label>
+        <input type="date" name="date" class="form-control" required></input>
       </div>
 
       <div class="form-group mb-3">
-        <label class="col-sm-2 col-form-label">Confirm Password</label>
-        <input type="password" name="cpassword" class="form-control" required></input>
+        <label class="col-sm-2 col-form-label">Address</label>
+        <textarea type="text" name="address" class="form-control" required></textarea>
+      </div>
+
+      <div class="form-group mb-3">
+        <label class="col-sm-2 col-form-label">Description</label>
+        <textarea type="text" name="description" class="form-control" required></textarea>
+      </div>
+
+      <div class="form-group mb-3">
+        <label class="col-sm-2 col-form-label">Post Link</label>
+        <input type="text" name="link" class="form-control" required></input>
+      </div>
+
+      <div class="form-group mb-3">
+        <label class="col-sm-2 col-form-label">Picture</label>
+        <input type="file" name="choosefile" class="form-control" accept="image/jpg, image/jpeg, image/png" required></input>
       </div>
 
         </div>
@@ -172,40 +193,50 @@ if(isset($_POST['delete'])){
   </div>
 </div>
 
-<!-- PASS MODAL -->
+<!-- EDIT MODAL -->
 <div class="modal fade" id="editmodal" tabindex="-1" aria-labelledby="editmodalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="editmodalLabel">Change Password</h1>
+        <h1 class="modal-title fs-5" id="editmodalLabel">Edit News Information</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <form action="admin_accounts.php" method="POST">
+      <form action="admin_events.php" method="POST">
       <div class="modal-body">
 
       <input type="hidden" id="id" name="id" class="form-control" required>
 
       <div class="form-group mb-3">
-        <label class="col-sm-2 col-form-label">Username</label>
-        <input type="text" id="username" name="username" class="form-control" readonly></input>
+        <label class="col-sm-2 col-form-label">Title</label>
+        <input type="text" id="title" name="title" class="form-control" required></input>
       </div>
 
       <div class="form-group mb-3">
-        <label class="col-sm-2 col-form-label" style="color: red">Password</label>
-        <input type="password" name="password" class="form-control" required></input>
+        <label class="col-sm-2 col-form-label">Date</label>
+        <input type="date" id="date" name="date" class="form-control" required></input>
       </div>
 
       <div class="form-group mb-3">
-        <label class="col-sm-2 col-form-label" style="color: red">Confirm Password</label>
-        <input type="password" name="cpassword" class="form-control" required></input>
+        <label class="col-sm-2 col-form-label">Address</label>
+        <textarea type="text" id="address" name="address" class="form-control" required></textarea>
+      </div>
+
+      <div class="form-group mb-3">
+        <label class="col-sm-2 col-form-label">Description</label>
+        <textarea type="text" id="description" name="description" class="form-control" required></textarea>
+      </div>
+
+      <div class="form-group mb-3">
+        <label class="col-sm-2 col-form-label">Post Link</label>
+        <input type="text" id="link" name="link" class="form-control" required></input>
       </div>
 
         </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" name="pass" class="btn btn-success">Change Password</button>
+        <button type="submit" name="edit" class="btn btn-success">Update</button>
       </div>
       
       </form>
@@ -219,21 +250,16 @@ if(isset($_POST['delete'])){
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="deletemodalLabel">Delete Admin?</h1>
+        <h1 class="modal-title fs-5" id="deletemodalLabel">Delete This News?</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <form action="admin_accounts.php" method="POST">
+      <form action="admin_events.php" method="POST">
       <div class="modal-body">
 
       <input type="hidden" id="id2" name="id2" class="form-control" required>
 
-        <div class="form-group mb-3">
-        <label class="col-sm-2 col-form-label">Username</label>
-          <input type="text" id="username2" class="form-control" readonly>
-        </div>
-
-        </div>
+      </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -271,12 +297,12 @@ if(isset($_POST['delete'])){
   <div class="row">
   <div class="col">
   <div class="text-start">
-    <h2>Manage Accounts</h2>
+    <h2>Manage Events</h2>
   </div>
   </div>
   <div class="col">
   <div class="mb-3 text-end">
-    <button type="button" class="btn btn-success btn-sm addbtn" id='add'>Create New Account +</button>
+    <button type="button" class="btn btn-success btn-sm addbtn" id='add'>Add Events +</button>
   </div>
   </div>
   </div>
@@ -284,22 +310,28 @@ if(isset($_POST['delete'])){
     <table id="myTable" class="table table-striped table-hover mb-0">
       <thead>
         <tr>
-          <th scope="col" class="text-center" style="background-color: #0e223e; color: white;">ID</th>
-          <th scope="col" class="text-center" style="background-color: #0e223e; color: white;">Account Name</th>
+          <th scope="col" class="text-center" style="background-color: #0e223e; color: white;">Date</th>
+          <th scope="col" class="text-center" style="background-color: #0e223e; color: white;">Title</th>
+          <th scope="col" class="text-center" style="background-color: #0e223e; color: white;">Address</th>
+          <th scope="col" class="text-center" style="background-color: #0e223e; color: white;">Description</th>
+          <th scope="col" class="text-center" style="background-color: #0e223e; color: white;">Link</th>
           <th scope="col" class="text-center" style="background-color: #0e223e; color: white;">Actions</th>
         </tr>
       </thead>
       <tbody>
         <?php
-        $stmt = $pdo->prepare("SELECT * from admin");
+        $stmt = $pdo->prepare("SELECT * from events");
         $stmt->execute();
         if($stmt->rowCount() > 0){
           $result = $stmt->fetchAll();
           foreach($result as $row){
         ?>
           <tr>
-            <td class="text-center"><?= $row['id']; ?></td>
-            <td class="text-center"><?= $row['username']; ?></td>
+            <td class="text-center"><?= $row['date']; ?></td>
+            <td class="text-center"><?= $row['title']; ?></td>
+            <td class="text-center"><?= $row['address']; ?></td>
+            <td class="text-center"><?= $row['description']; ?></td>
+            <td class="text-center"><?= $row['link']; ?></td>
             <td class="text-center">
               <div class='btn-group' role='group' aria-label='Basic mixed styles example'>
                 <button type='button' id='<?= $row['id']; ?>' class='btn btn-outline-secondary editbtn' value='<?= $row['id']; ?>'><i class="bi bi-pencil-square"></i></button>
@@ -363,7 +395,11 @@ if(isset($_POST['delete'])){
         console.log(data);
 
         $('#id').val(id);
-        $('#username').val(data[1]);
+        $('#date').val(data[0]);
+        $('#title').val(data[1]);
+        $('#address').val(data[2]);
+        $('#description').val(data[3]);
+        $('#link').val(data[4]);
     });
   });
 </script>
@@ -383,7 +419,6 @@ if(isset($_POST['delete'])){
         console.log(data);
 
         $('#id2').val(id);
-        $('#username2').val(data[1]);
     });
   });
 </script>

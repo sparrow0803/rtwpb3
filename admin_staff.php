@@ -13,50 +13,48 @@ try{
     }
 
 if (isset($_POST['add'])){
-  $username = $_POST["username"];
-  $password = $_POST["password"];
-  $cpassword = $_POST["cpassword"];
+  $staff = $_POST["staff"];
+  $position = $_POST["position"];
+  $filename = $_FILES['choosefile']['name'];
+  $tempfile = $_FILES['choosefile']['tmp_name'];
+  $folder = "staff/".$filename;
       
-  $stmt = $pdo->prepare("SELECT * from admin where username='$username'");
-  $stmt->execute();
-    if($stmt->rowCount() > 0){
-      $_SESSION['error'] = "Username Already Exists!";
-    }
-    else{
-      if ($password === $cpassword){
-        $hash = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $pdo->prepare("insert into admin set username=?, password=?");
-        $stmt->execute([$username, $hash]);
-        $_SESSION['success'] = "User Added Successfully!";
-      }
-      else{
-        $_SESSION['error'] = "Password Does Not Match!";
-      }
-    }
-}
-
-if (isset($_POST['pass'])){
-  $id = $_POST['id'];
-  $password = $_POST["password"];
-  $cpassword = $_POST["cpassword"];
-
-  if ($password === $cpassword){
-    $hash = password_hash($password, PASSWORD_DEFAULT);
-    $stmt = $pdo->prepare("UPDATE admin set password='$hash' where id='$id'");
-    $stmt->execute();
-    $_SESSION['success'] = "Password Updated Successfully!";
+  $stmt = $pdo->prepare("INSERT into staff(staff, position, picture) values('$staff', '$position', '$filename')");
+  if($stmt->execute()){
+    move_uploaded_file($tempfile, $folder);
+    $_SESSION['success'] = "Staff Added Successfully!";
   }
   else{
-    $_SESSION['error'] = "Password Does Not Match!";
+    $_SESSION['error'] = "Failed to Add Staff!";
+  }
+}
+
+if (isset($_POST['edit'])){
+  $id = $_POST["id"];
+  $staff = $_POST["staff"];
+  $position = $_POST["position"];
+
+  $stmt = $pdo->prepare("UPDATE staff set staff='$staff', position='$position' where id='$id'");
+  if ($stmt->execute()){
+  $_SESSION['success'] = "Staff Updated Successfully!";
+  }
+  else{
+    $_SESSION['error'] = "Staff Update Failed!";
   }
 }
 
 if(isset($_POST['delete'])){
     $id = $_POST['id2'];
 
-    $stmt = $pdo->prepare("DELETE from admin where id='$id'");
+    $stmt2 = $pdo->prepare("SELECT picture from staff where id='$id'");
+    $stmt2->execute();
+    $row = $stmt2->fetch();
+    $imagepath = 'staff/'.$row['picture'];
+    unlink($imagepath);
+
+    $stmt = $pdo->prepare("DELETE from staff where id='$id'");
     if($stmt->execute()){
-      $_SESSION['success'] = "Admin Deleted Successfully!";
+      $_SESSION['success'] = "Staff Deleted Successfully!";
     }
     else{
       $_SESSION['error'] = "Delete Failed!";
@@ -137,26 +135,26 @@ if(isset($_POST['delete'])){
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="addmodalLabel">Add Admin Account</h1>
+        <h1 class="modal-title fs-5" id="addmodalLabel">Add New Staff</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <form action="admin_accounts.php" method="POST">
+      <form action="admin_staff.php" method="POST" enctype="multipart/form-data">
       <div class="modal-body">
 
       <div class="form-group mb-3">
-        <label class="col-sm-2 col-form-label">Username</label>
-        <input type="text" name="username" class="form-control" autocomplete="off" required></input>
+        <label class="col-sm-2 col-form-label">Fullname</label>
+        <input type="text" name="staff" class="form-control" required></input>
       </div>
 
       <div class="form-group mb-3">
-        <label class="col-sm-2 col-form-label">Password</label>
-        <input type="password" name="password" class="form-control" required></input>
+        <label class="col-sm-2 col-form-label">Position</label>
+        <input type="text" name="position" class="form-control" required></input>
       </div>
 
       <div class="form-group mb-3">
-        <label class="col-sm-2 col-form-label">Confirm Password</label>
-        <input type="password" name="cpassword" class="form-control" required></input>
+        <label class="col-sm-2 col-form-label">Picture</label>
+        <input type="file" name="choosefile" class="form-control" accept="image/jpg, image/jpeg, image/png" required></input>
       </div>
 
         </div>
@@ -172,40 +170,35 @@ if(isset($_POST['delete'])){
   </div>
 </div>
 
-<!-- PASS MODAL -->
+<!-- EDIT MODAL -->
 <div class="modal fade" id="editmodal" tabindex="-1" aria-labelledby="editmodalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="editmodalLabel">Change Password</h1>
+        <h1 class="modal-title fs-5" id="editmodalLabel">Edit News Information</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <form action="admin_accounts.php" method="POST">
+      <form action="admin_staff.php" method="POST">
       <div class="modal-body">
 
       <input type="hidden" id="id" name="id" class="form-control" required>
 
       <div class="form-group mb-3">
-        <label class="col-sm-2 col-form-label">Username</label>
-        <input type="text" id="username" name="username" class="form-control" readonly></input>
+        <label class="col-sm-2 col-form-label">Fullname</label>
+        <input type="text" id="staff" name="staff" class="form-control" required></input>
       </div>
 
       <div class="form-group mb-3">
-        <label class="col-sm-2 col-form-label" style="color: red">Password</label>
-        <input type="password" name="password" class="form-control" required></input>
-      </div>
-
-      <div class="form-group mb-3">
-        <label class="col-sm-2 col-form-label" style="color: red">Confirm Password</label>
-        <input type="password" name="cpassword" class="form-control" required></input>
+        <label class="col-sm-2 col-form-label">Position</label>
+        <input type="text" id="position" name="position" class="form-control" required></input>
       </div>
 
         </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" name="pass" class="btn btn-success">Change Password</button>
+        <button type="submit" name="edit" class="btn btn-success">Update</button>
       </div>
       
       </form>
@@ -219,21 +212,16 @@ if(isset($_POST['delete'])){
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="deletemodalLabel">Delete Admin?</h1>
+        <h1 class="modal-title fs-5" id="deletemodalLabel">Delete This News?</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <form action="admin_accounts.php" method="POST">
+      <form action="admin_staff.php" method="POST">
       <div class="modal-body">
 
       <input type="hidden" id="id2" name="id2" class="form-control" required>
 
-        <div class="form-group mb-3">
-        <label class="col-sm-2 col-form-label">Username</label>
-          <input type="text" id="username2" class="form-control" readonly>
-        </div>
-
-        </div>
+      </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -271,12 +259,12 @@ if(isset($_POST['delete'])){
   <div class="row">
   <div class="col">
   <div class="text-start">
-    <h2>Manage Accounts</h2>
+    <h2>Manage Staff</h2>
   </div>
   </div>
   <div class="col">
   <div class="mb-3 text-end">
-    <button type="button" class="btn btn-success btn-sm addbtn" id='add'>Create New Account +</button>
+    <button type="button" class="btn btn-success btn-sm addbtn" id='add'>Add Staff +</button>
   </div>
   </div>
   </div>
@@ -284,22 +272,22 @@ if(isset($_POST['delete'])){
     <table id="myTable" class="table table-striped table-hover mb-0">
       <thead>
         <tr>
-          <th scope="col" class="text-center" style="background-color: #0e223e; color: white;">ID</th>
-          <th scope="col" class="text-center" style="background-color: #0e223e; color: white;">Account Name</th>
+          <th scope="col" class="text-center" style="background-color: #0e223e; color: white;">Staff</th>
+          <th scope="col" class="text-center" style="background-color: #0e223e; color: white;">Position</th>
           <th scope="col" class="text-center" style="background-color: #0e223e; color: white;">Actions</th>
         </tr>
       </thead>
       <tbody>
         <?php
-        $stmt = $pdo->prepare("SELECT * from admin");
+        $stmt = $pdo->prepare("SELECT * from staff");
         $stmt->execute();
         if($stmt->rowCount() > 0){
           $result = $stmt->fetchAll();
           foreach($result as $row){
         ?>
           <tr>
-            <td class="text-center"><?= $row['id']; ?></td>
-            <td class="text-center"><?= $row['username']; ?></td>
+            <td class="text-center"><?= $row['staff']; ?></td>
+            <td class="text-center"><?= $row['position']; ?></td>
             <td class="text-center">
               <div class='btn-group' role='group' aria-label='Basic mixed styles example'>
                 <button type='button' id='<?= $row['id']; ?>' class='btn btn-outline-secondary editbtn' value='<?= $row['id']; ?>'><i class="bi bi-pencil-square"></i></button>
@@ -363,7 +351,8 @@ if(isset($_POST['delete'])){
         console.log(data);
 
         $('#id').val(id);
-        $('#username').val(data[1]);
+        $('#staff').val(data[0]);
+        $('#position').val(data[1]);
     });
   });
 </script>
@@ -383,7 +372,6 @@ if(isset($_POST['delete'])){
         console.log(data);
 
         $('#id2').val(id);
-        $('#username2').val(data[1]);
     });
   });
 </script>

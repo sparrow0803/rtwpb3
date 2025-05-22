@@ -438,7 +438,7 @@ if (isset($_POST['login'])){
 
     <!-- More News Button -->
     <div class="col-lg-12 text-center mt-5" data-aos="fade-up" data-aos-delay="100">
-      <a href="news.php" class="btn btn-sm btn-outline-dark rounded-0 fw-bold shadow-none">More News ></a>
+      <a href="#" class="btn btn-sm btn-outline-dark rounded-0 fw-bold shadow-none">More News ></a>
     </div>
   </div>
 </div>
@@ -557,7 +557,7 @@ if (isset($_POST['login'])){
 
       <!-- More Events Button -->
     <div class="col-lg-12 text-center mt-5" data-aos="fade-up" data-aos-delay="100">
-      <a href="events.php" class="btn btn-sm btn-outline-dark rounded-0 fw-bold shadow-none">More Events ></a>
+      <a href="#" class="btn btn-sm btn-outline-dark rounded-0 fw-bold shadow-none">More Events ></a>
     </div>
 </div>
 
