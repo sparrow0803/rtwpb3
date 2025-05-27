@@ -7,33 +7,6 @@ try{
     } catch (PDOException $e) {
     echo 'Connection Failed' .$e->getMessage();
     }
-
-$conn = mysqli_connect('localhost', 'root', '', 'rtwpb3');
-
-if (isset($_POST['login'])){
-    $username = $_POST['username'];
-    $query = "SELECT * from admin where username='$username'";
-    $result = mysqli_query($conn, $query);
-
-    if($result){
-        if(mysqli_num_rows($result) == 1){
-            $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
-            $pass = $row['password'];
-
-            if(password_verify($_POST['password'], $pass)){
-                $_SESSION['admin'] = $username;
-                $_SESSION['admin_id'] = $row['id'];
-                header('location:admin_panel.php');
-            }
-            else{
-                $_SESSION['error'] = "Invalid Password";
-            }
-        }
-        else{
-            $_SESSION['error'] = "Invalid Credentials";
-        }
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -42,7 +15,7 @@ if (isset($_POST['login'])){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RTWPB3</title>
-      <link rel="icon" href="images/logo.png" type="image/x-icon" />
+    <link rel="icon" href="images/logo.png" type="image/x-icon" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
@@ -195,110 +168,10 @@ if (isset($_POST['login'])){
         <a class="btn shadow-none me-2" href="https://nwpc.dole.gov.ph/region-iii/" target="_blank" rel="noopener noreferrer">
           <i class="bi bi-link-45deg"></i>
         </a>
-        <!-- <button type="button" class="btn btn-outline-dark shadow-none me-lg-3 me-2" data-bs-toggle="modal" data-bs-target="#loginModal">
-        Login
-        </button>
-        <button type="button" class="btn btn-outline-dark shadow-none" data-bs-toggle="modal" data-bs-target="#registerModal">
-        Register
-        </button> -->
       </div>
     </div>
   </div>
 </nav>
-
-<!-- LOGIN MODAL -->
-<div class="modal fade" id="loginModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title d-flex align-items-center">
-        <i class="bi bi-person-circle fs-3 me-2"></i> Admin Login
-        </h5>
-        <button type="reset" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form method="POST" action="index.php">
-      <div class="modal-body">
-        <div class="mb-3">
-            <label class="form-label">Username</label>
-            <input type="text" name="username" class="form-control shadow-none" autocomplete="off" required>
-        </div>
-         <div class="mb-4">
-            <label class="form-label">Password</label>
-            <input type="password" name="password" class="form-control shadow-none" required>
-        </div>
-        <div class="d-flex align-items-center justify-content-between">
-            <button type="submit" name="login" class="btn btn-dark shadow-none">Login</button>
-            <!-- <a href="javascript: void(0)" class="text-secondary text-decoration-none">Forgot Password?</a> -->
-        </div>
-      </div>
-    </form>
-    </div>
-  </div>
-</div>
-
-<!-- REGISTER MODAL -->
-<!-- <div class="modal fade" id="registerModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-    <form>
-      <div class="modal-header">
-        <h5 class="modal-title d-flex align-items-center">
-        <i class="bi bi-person-lines-fill fs-3 me-2"></i> User Registration
-        </h5>
-        <button type="reset" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <span class="badge rounded-pill bg-light text-dark mb-3 text-wrap lh-base">
-            Note: Your details must match with your ID that will be required during check-in.
-        </span>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-6 ps-0 mb-3">
-                    <label class="form-label">Name</label>
-                    <input type="text" class="form-control shadow-none">
-                </div>
-                <div class="col-md-6 p-0 mb-3">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-control shadow-none">
-                </div>
-                <div class="col-md-6 ps-0 mb-3">
-                    <label class="form-label">Phone Number</label>
-                    <input type="number" class="form-control shadow-none">
-                </div>
-                <div class="col-md-6 p-0 mb-3">
-                    <label class="form-label">Picture</label>
-                    <input type="file" class="form-control shadow-none">
-                </div>
-                <div class="col-md-12 p-0 mb-3">
-                    <label class="form-label">Address</label>
-                    <textarea class="form-control shadow-none" rows="1"></textarea>
-                </div>
-                <div class="col-md-6 ps-0 mb-3">
-                    <label class="form-label">Pincode</label>
-                    <input type="number" class="form-control shadow-none">
-                </div>
-                <div class="col-md-6 p-0 mb-3">
-                    <label class="form-label">Date of Birth</label>
-                    <input type="date" class="form-control shadow-none">
-                </div>
-                <div class="col-md-6 ps-0 mb-3">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-control shadow-none">
-                </div>
-                <div class="col-md-6 p-0 mb-3">
-                    <label class="form-label">Confirm Password</label>
-                    <input type="password" class="form-control shadow-none">
-                </div>
-            </div>
-        </div>
-        <div class="text-center my-1">
-            <button type="submit" class="btn btn-dark shadow-none"> REGISTER</button>
-        </div>
-      </div>
-    </form>
-    </div>
-  </div>
-</div> -->
 
 <!-- CAROUSEL -->
 <div class="" id="home" data-aos="zoom-in" data-aos-delay="20">
@@ -325,30 +198,6 @@ if (isset($_POST['login'])){
     </div>
   </div>
 </div>
-
-<!-- CHECK AVAILABILITY FORM -->
-<!-- <div class="container availability-form" data-aos="fade-up" data-aos-delay="30">
-<div class="row">
-  <div class="col-lg-12 bg-white shadow p-4 rounded">
-    <h5 class="mb-4">Submit Inquiries</h5>
-    <form action="">
-      <div class="row align-items-end">
-        <div class="col-lg-2 mb-3">
-          <label class="form-label" style="font-weight: 500;">Subject</label>
-          <input type="text" class="form-control shadow-none">
-        </div>
-        <div class="col-lg-8 mb-3">
-          <label class="form-label" style="font-weight: 500;">Description</label>
-          <input type="text" class="form-control shadow-none">
-        </div>
-        <div class="col-lg-1 mb-lg-3 mt-2">
-          <button type="submit" class="btn btn-outline-success shadow-none">Submit</button>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
-</div> -->
 
 <!-- ABOUT RTWPB3 -->
 <div class="container about-us" data-aos="fade-up" data-aos-delay="10">
@@ -408,34 +257,6 @@ if (isset($_POST['login'])){
       <h5 class="text-center" style="color: red;" data-aos="fade-up" data-aos-delay="100">NO NEWS AVAILABLE</h5>
     <?php } ?>
 
-    <!-- <div class="col-lg-4 col-md-6 my-3" data-aos="fade-up" data-aos-delay="200">
-      <div class="card border-0 shadow h-100" style="max-width: 350px; margin: auto;">
-        <img src="images/news2.jpg" class="card-img-top" style="height: 200px; object-fit: cover;" alt="News 2">
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title">New Open Position</h5>
-          <h6 class="mb-3">April 28, 2025</h6>
-          <p class="flex-grow-1">
-            Lorem ipsum dolor sit amet. Inventore rerum sed voluptatem porro est mollitia laboriosam sed exercitationem delectus rem quas omnis.
-          </p>
-          <a href="https://www.facebook.com/share/p/18SJuXYSJ6/" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white mt-auto shadow-none custom-bg">More Details</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-lg-4 col-md-6 my-3" data-aos="fade-up" data-aos-delay="300">
-      <div class="card border-0 shadow h-100" style="max-width: 350px; margin: auto;">
-        <img src="images/news3.jpg" class="card-img-top" style="height: 200px; object-fit: cover;" alt="News 3">
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title">Labor Day</h5>
-          <h6 class="mb-3">May 1, 2025</h6>
-          <p class="flex-grow-1">
-            Lorem ipsum dolor sit amet. Inventore rerum sed voluptatem porro est mollitia laboriosam sed exercitationem delectus rem quas omnis.
-          </p>
-          <a href="https://www.facebook.com/share/p/1CTPo36sjj/" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white mt-auto shadow-none custom-bg">More Details</a>
-        </div>
-      </div>
-    </div> -->
-
     <!-- More News Button -->
     <div class="col-lg-12 text-center mt-5" data-aos="fade-up" data-aos-delay="100">
       <a href="#" class="btn btn-sm btn-outline-dark rounded-0 fw-bold shadow-none">More News ></a>
@@ -472,77 +293,6 @@ if (isset($_POST['login'])){
       </div>
       </div>
       <?php } } ?>
-
-        <!-- <div class="swiper-slide eve">
-        <div class="card border-0 shadow h-100 d-flex flex-column" style="max-width: 350px; margin: auto;">
-        <img src="images/events1.jpg" class="card-img-top" style="height: 200px; object-fit: cover;" alt="News 1">
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title">Productivity Training at Sacop</h5>
-          <h6 class="mb-3">May 15, 2025</h6>
-          <h6 class="mb-3">Maimpis, Pampanga</h6>
-          <p class="flex-grow-1 mb-3">
-            Lorem ipsum dolor sit amet. Inventore rerum sed voluptatem porro est mollitia laboriosam sed exercitationem delectus rem quas omnis.
-          </p>
-          <a href="https://www.facebook.com/share/p/1RAdHrqWyj/" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white mt-auto shadow-none custom-bg">More Details</a>
-        </div>
-      </div>
-      </div>
-      <div class="swiper-slide eve">
-        <div class="card border-0 shadow h-100 d-flex flex-column" style="max-width: 350px; margin: auto;">
-        <img src="images/events2.jpg" class="card-img-top" style="height: 200px; object-fit: cover;" alt="News 1">
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title">Marketing Productivity Learning Session</h5>
-          <h6 class="mb-3">March 13, 2025</h6>
-          <h6 class="mb-3">Malolos, Bulacan</h6>
-          <p class="flex-grow-1 mb-3">
-            Lorem ipsum dolor sit amet. Inventore rerum sed voluptatem porro est mollitia laboriosam sed exercitationem delectus rem quas omnis.
-          </p>
-          <a href="https://www.facebook.com/share/p/19wWBKDvtz/" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white mt-auto shadow-none custom-bg">More Details</a>
-        </div>
-      </div>
-      </div>
-      <div class="swiper-slide eve">
-        <div class="card border-0 shadow h-100 d-flex flex-column" style="max-width: 350px; margin: auto;">
-        <img src="images/events3.jpg" class="card-img-top" style="height: 200px; object-fit: cover;" alt="News 1">
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title">2025 National Women's Month</h5>
-          <h6 class="mb-3">March 1-31, 2025</h6>
-          <h6 class="mb-3">Region 3</h6>
-          <p class="flex-grow-1 mb-3">
-            Lorem ipsum dolor sit amet. Inventore rerum sed voluptatem porro est mollitia laboriosam sed exercitationem delectus rem quas omnis.
-          </p>
-          <a href="https://www.facebook.com/share/p/1Bcq1FHdyZ/" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white mt-auto shadow-none custom-bg">More Details</a>
-        </div>
-      </div>
-      </div>
-      <div class="swiper-slide eve">
-        <div class="card border-0 shadow h-100 d-flex flex-column" style="max-width: 350px; margin: auto;">
-        <img src="images/events4.jpg" class="card-img-top" style="height: 200px; object-fit: cover;" alt="News 1">
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title">Marketing Productivity Learning Session</h5>
-          <h6 class="mb-3">March 7, 2025</h6>
-          <h6 class="mb-3">Balanga, Bataan</h6>
-          <p class="flex-grow-1 mb-3">
-            Lorem ipsum dolor sit amet. Inventore rerum sed voluptatem porro est mollitia laboriosam sed exercitationem delectus rem quas omnis.
-          </p>
-          <a href="https://www.facebook.com/share/p/18rkZQgpqA/" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white mt-auto shadow-none custom-bg">More Details</a>
-        </div>
-      </div>
-      </div>
-      <div class="swiper-slide eve">
-        <div class="card border-0 shadow h-100 d-flex flex-column" style="max-width: 350px; margin: auto;">
-        <img src="images/events5.jpg" class="card-img-top" style="height: 200px; object-fit: cover;" alt="News 1">
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title">Improving Productivity Through Brand Reputation</h5>
-          <h6 class="mb-3">March 6, 2025</h6>
-          <h6 class="mb-3">City of San Fernando, Pampanga</h6>
-          <p class="flex-grow-1 mb-3">
-            Lorem ipsum dolor sit amet. Inventore rerum sed voluptatem porro est mollitia laboriosam sed exercitationem delectus rem quas omnis.
-          </p>
-          <a href="https://www.facebook.com/share/p/15uBpUnHrb/" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white mt-auto shadow-none custom-bg">More Details</a>
-        </div>
-      </div>
-      </div> -->
 
     </div>
     <div class="swiper-pagination"></div>
@@ -619,14 +369,6 @@ if (isset($_POST['login'])){
         AIDSASHASJAKSJAKSJAKS
         dDaaDADSASASASASAsasasasa
       </p>
-      <?php 
-      if(isset($_SESSION['admin'])) {
-       echo '<a href="admin_panel.php" class="text-decoration-none">Admin Panel <i class="bi bi-box-arrow-up-right"></i></a>';
-      }
-      else {
-        echo '<a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="text-decoration-none">Admin Panel <i class="bi bi-box-arrow-up-right"></i></a>';
-      }
-      ?>
     </div>
     <div class="col-lg-4 p-4">
       <h5 class="mb-3">Contact Us</h5>

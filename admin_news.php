@@ -2,7 +2,7 @@
 session_start();
 
 if (!isset($_SESSION['admin'])){
-  header('location:index.php');
+  header('location:login.php');
 }
 
 try{
@@ -141,7 +141,7 @@ if(isset($_POST['delete'])){
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="addmodalLabel">Add Admin Account</h1>
+        <h1 class="modal-title fs-5" id="addmodalLabel">Add News</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
