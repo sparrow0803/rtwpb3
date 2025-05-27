@@ -402,13 +402,13 @@ try{
 
 <script>
     var swiper = new Swiper(".swiper-container", {
-      spaceBetween: 30,
-      effect: "fade",
+      slidesPerView: 1,     // ✅ Show only one slide at a time
+      spaceBetween: 0,
       loop: true,
       autoplay: {
-        delay: 3500,
+        delay: 3000,
         disableOnInteraction: false,
-      }
+      },
     });
 
     var swiper = new Swiper(".events-slider", {
