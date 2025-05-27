@@ -174,26 +174,26 @@ try{
 </nav>
 
 <!-- CAROUSEL -->
-<div class="" id="home" data-aos="zoom-in" data-aos-delay="20">
+<div class="container" id="home" data-aos="zoom-in" data-aos-delay="20">
   <div class="swiper swiper-container">
     <div class="swiper-wrapper">
-      <div class="swiper-slide">
-        <img src="images/1.png" class="w-100 d-block" style="height: 350px;"/>
+      <div class="swiper-slide" style="height: 350px; overflow: hidden;">
+        <img src="images/1.png" style="object-fit: cover; height: 100%; width: 100%; " class="w-100 d-block"/>
       </div>
-      <div class="swiper-slide">
-        <img src="images/2.png" class="w-100 d-block" style="height: 350px;"/>
+      <div class="swiper-slide" style="height: 350px; overflow: hidden;">
+        <img src="images/2.png" style="object-fit: cover; height: 100%; width: 100%;" class="w-100 d-block"/>
       </div>
-      <div class="swiper-slide">
-        <img src="images/3.jpg" class="w-100 d-block" style="height: 350px;"/>
+      <div class="swiper-slide" style="height: 350px; overflow: hidden;">
+        <img src="images/3.jpg" style="object-fit: cover; height: 100%; width: 100%;" class="w-100 d-block"/>
       </div>
-      <div class="swiper-slide">
-        <img src="images/4.jpg" class="w-100 d-block" style="height: 350px;"/>
+      <div class="swiper-slide" style="height: 350px; overflow: hidden;">
+        <img src="images/4.jpg" style="object-fit: cover; height: 100%; width: 100%;" class="w-100 d-block"/>
       </div>
-      <div class="swiper-slide">
-        <img src="images/5.jpg" class="w-100 d-block" style="height: 350px;"/>
+      <div class="swiper-slide" style="height: 350px; overflow: hidden;">
+        <img src="images/5.jpg" style="object-fit: cover; height: 100%; width: 100%;" class="w-100 d-block"/>
       </div>
-      <div class="swiper-slide">
-        <img src="images/6.jpg" class="w-100 d-block" style="height: 350px;"/>
+      <div class="swiper-slide" style="height: 350px; overflow: hidden;">
+        <img src="images/6.jpg" style="object-fit: cover; height: 100%; width: 100%;" class="w-100 d-block"/>
       </div>
     </div>
   </div>
@@ -258,9 +258,9 @@ try{
     <?php } ?>
 
     <!-- More News Button -->
-    <div class="col-lg-12 text-center mt-5" data-aos="fade-up" data-aos-delay="100">
+    <!-- <div class="col-lg-12 text-center mt-5" data-aos="fade-up" data-aos-delay="100">
       <a href="#" class="btn btn-sm btn-outline-dark rounded-0 fw-bold shadow-none">More News ></a>
-    </div>
+    </div> -->
   </div>
 </div>
 
@@ -306,9 +306,9 @@ try{
     <?php } ?>
 
       <!-- More Events Button -->
-    <div class="col-lg-12 text-center mt-5" data-aos="fade-up" data-aos-delay="100">
+    <!-- <div class="col-lg-12 text-center mt-5" data-aos="fade-up" data-aos-delay="100">
       <a href="#" class="btn btn-sm btn-outline-dark rounded-0 fw-bold shadow-none">More Events ></a>
-    </div>
+    </div> -->
 </div>
 
 <!-- STAFF -->
