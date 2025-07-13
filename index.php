@@ -372,8 +372,8 @@ try{
     </div>
     <div class="col-lg-4 p-4">
       <h5 class="mb-3">Contact Us</h5>
-      <h6>Telephone #: 890-989-212</h6>
-      <h6>Cellphone #: 09671234567</h6>
+      <h6>Telephone #: xxx-xxx-xxx</h6>
+      <h6>Cellphone #: xxxx-xxx-xxxx</h6>
     </div>
     <div class="col-lg-4 p-4">
       <h5 class="mb-3">Follow us</h5>
